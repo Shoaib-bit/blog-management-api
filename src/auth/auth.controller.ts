@@ -16,7 +16,32 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
         try {
-            //Todo: implement login logic
+            const user = await this.authService.findUserByEmail(loginDto.email)
+            if (!user) {
+                throw new BadRequestException('Invalid email or password')
+            }
+            const isPasswordValid = await PasswordUtil.comparePassword(
+                loginDto.password,
+                user.password
+            )
+
+            if (!isPasswordValid) {
+                throw new BadRequestException('Invalid email or password')
+            }
+
+            const token = await this.authService.getToken(user)
+
+            return {
+                message: 'Login successful',
+                data: {
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email
+                    },
+                    token: token
+                }
+            }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
@@ -47,7 +72,10 @@ export class AuthController {
                 name: registerDto.name
             })
 
-            return { message: 'User registered successfully' }
+            return {
+                message: 'Registration successful',
+                data: null
+            }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)

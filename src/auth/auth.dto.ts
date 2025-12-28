@@ -21,7 +21,7 @@ export class LoginDto {
 
 export class RegisterDto {
     @ApiProperty({
-        example: 'shoaib123',
+        example: 'test123',
         description: 'Name for the user',
         required: true
     })
@@ -29,7 +29,7 @@ export class RegisterDto {
     name: string
 
     @ApiProperty({
-        example: 'shoaib@example.com',
+        example: 'test@example.com',
         description: 'User email address (must be unique)',
         required: true
     })

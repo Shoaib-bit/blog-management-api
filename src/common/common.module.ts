@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
+import { JwtModule } from '@nestjs/jwt'
 import { HttpExceptionFilter } from './filters'
 import { TransformResponseInterceptor } from './interceptors'
 import { PrismaService } from './services/prisma.service'
@@ -9,6 +10,11 @@ import { PrismaService } from './services/prisma.service'
     imports: [
         ConfigModule.forRoot({
             isGlobal: true
+        }),
+        JwtModule.register({
+            global: true,
+            secret: process.env.JWT_SECRET,
+            signOptions: { expiresIn: '30d' }
         })
     ],
     providers: [
