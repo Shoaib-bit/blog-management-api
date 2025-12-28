@@ -6,9 +6,12 @@ import {
     Post
 } from '@nestjs/common'
 import { LoginDto, RegisterDto } from './auth.dto'
+import { AuthService } from './auth.service'
 
-@Controller("auth")
+@Controller('auth')
 export class AuthController {
+    constructor(private authService: AuthService) {}
+
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
         try {
@@ -26,7 +29,14 @@ export class AuthController {
     @Post('register')
     async register(@Body() registerDto: RegisterDto) {
         try {
-            //Todo: implement register logic
+            // for db testing 
+            const user = await this.authService.createUser({
+                email: registerDto.email,
+                password: registerDto.password,
+                name: registerDto.name
+            })
+
+            return { message: 'User registered successfully', userId: user.id }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
