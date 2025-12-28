@@ -5,6 +5,7 @@ import {
     InternalServerErrorException,
     Post
 } from '@nestjs/common'
+import { PasswordUtil } from 'src/common/utils'
 import { LoginDto, RegisterDto } from './auth.dto'
 import { AuthService } from './auth.service'
 
@@ -29,14 +30,24 @@ export class AuthController {
     @Post('register')
     async register(@Body() registerDto: RegisterDto) {
         try {
-            // for db testing 
-            const user = await this.authService.createUser({
+            const userExist = await this.authService.findUserByEmail(
+                registerDto.email
+            )
+            if (userExist) {
+                throw new BadRequestException('Email already in use')
+            }
+
+            const hashPassword = await PasswordUtil.hashPassword(
+                registerDto.password
+            )
+
+            await this.authService.createUser({
                 email: registerDto.email,
-                password: registerDto.password,
+                password: hashPassword,
                 name: registerDto.name
             })
 
-            return { message: 'User registered successfully', userId: user.id }
+            return { message: 'User registered successfully' }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
