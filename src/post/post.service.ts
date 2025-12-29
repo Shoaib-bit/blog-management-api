@@ -77,4 +77,20 @@ export class PostService {
             }
         })
     }
+
+    async updatePost(id: number, data: Prisma.PostUpdateInput) {
+        return this.prisma.post.update({
+            where: { id },
+            data,
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        })
+    }
 }

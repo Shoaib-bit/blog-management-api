@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator'
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsPositive,
+    IsString,
+    MaxLength,
+    MinLength
+} from 'class-validator'
 
 export class CreatePostDto {
     @ApiProperty({
@@ -27,7 +35,6 @@ export class CreatePostDto {
     @MinLength(10, { message: 'Content must be at least 10 characters long' })
     content: string
 }
-
 
 export class GetPostsDto {
     @ApiProperty({
@@ -60,4 +67,31 @@ export class GetPostsDto {
     @IsPositive()
     @IsNumber()
     limit: number = 10
+}
+
+export class UpdatePostDto {
+    @ApiProperty({
+        example: 'How to learn NestJS - Updated',
+        description: 'Post title',
+        required: false,
+        minLength: 3,
+        maxLength: 200
+    })
+    @IsOptional()
+    @IsString({ message: 'Title must be a string' })
+    @MinLength(3, { message: 'Title must be at least 3 characters long' })
+    @MaxLength(200, { message: 'Title must not exceed 200 characters' })
+    title?: string
+
+    @ApiProperty({
+        example:
+            'This is an updated comprehensive guide on how to learn NestJS...',
+        description: 'Post content',
+        required: false,
+        minLength: 10
+    })
+    @IsOptional()
+    @IsString({ message: 'Content must be a string' })
+    @MinLength(10, { message: 'Content must be at least 10 characters long' })
+    content?: string
 }

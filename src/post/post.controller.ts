@@ -2,11 +2,13 @@ import {
     BadRequestException,
     Body,
     Controller,
+    ForbiddenException,
     Get,
     InternalServerErrorException,
     NotFoundException,
     Param,
     Post,
+    Put,
     Query,
     Req,
     UnauthorizedException,
@@ -15,7 +17,7 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger'
 import { Request } from 'express'
 import { AuthGuard } from 'src/common/guard'
-import { CreatePostDto, GetPostsDto } from './post.dto'
+import { CreatePostDto, GetPostsDto, UpdatePostDto } from './post.dto'
 import { PostService } from './post.service'
 
 @Controller('posts')
@@ -144,6 +146,85 @@ export class PostController {
             }
             throw new InternalServerErrorException(
                 'An unexpected error occurred'
+            )
+        }
+    }
+
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('access-token')
+    @Put(':id')
+    async updatePost(
+        @Req() req: Request,
+        @Param('id') id: number,
+        @Body() updatePostDto: UpdatePostDto
+    ) {
+        try {
+            if (!req.user || !req.user.id) {
+                throw new UnauthorizedException(
+                    'User not authenticated or invalid user data'
+                )
+            }
+
+            if (isNaN(Number(id))) {
+                throw new BadRequestException('Post Id must be number')
+            }
+
+            // Check if post exists
+            const post = await this.postService.getPostById(Number(id))
+            if (!post) {
+                throw new NotFoundException('Post not found')
+            }
+
+            // Check if user is the owner of the post
+            if (post.authorId !== req.user.id) {
+                throw new ForbiddenException(
+                    'You are not authorized to update this post'
+                )
+            }
+
+            // Validate at least one field is provided
+            if (!updatePostDto.title && !updatePostDto.content) {
+                throw new BadRequestException(
+                    'At least one field (title or content) must be provided'
+                )
+            }
+
+            // Prepare update data
+            const updateData: {
+                title?: string
+                content?: string
+            } = {}
+            if (updatePostDto.title) {
+                if (updatePostDto.title.trim().length === 0) {
+                    throw new BadRequestException('Title cannot be empty')
+                }
+                updateData.title = updatePostDto.title.trim()
+            }
+            if (updatePostDto.content) {
+                if (updatePostDto.content.trim().length === 0) {
+                    throw new BadRequestException('Content cannot be empty')
+                }
+                updateData.content = updatePostDto.content.trim()
+            }
+
+            const updatedPost = await this.postService.updatePost(
+                Number(id),
+                updateData
+            )
+
+            return {
+                message: 'Post updated successfully',
+                data: updatedPost
+            }
+        } catch (error) {
+            if (error.message) {
+                throw new InternalServerErrorException(
+                    `Failed to update post: ${error.message}`
+                )
+            }
+
+            throw new InternalServerErrorException(
+                'An unexpected error occurred while updating the post'
             )
         }
     }
