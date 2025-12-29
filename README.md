@@ -1,98 +1,470 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Blog Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful API built with NestJS, Prisma, and PostgreSQL for managing blog posts with user authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Table of Contents
 
-## Description
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Database Setup](#database-setup)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [API Endpoints](#api-endpoints)
+- [Usage Examples](#usage-examples)
+- [Project Structure](#project-structure)
+- [Available Scripts](#available-scripts)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Features
 
-## Project setup
+- **User Authentication**: JWT-based authentication with secure password hashing
+- **User Registration & Login**: Secure user registration with email validation and strong password requirements
+- **Blog Post Management**: Create, read, update, and delete blog posts
+- **Post Ownership**: Users can only edit/delete their own posts
+- **Pagination**: Efficient pagination for blog posts listing
+- **Search**: Search posts by title or content
+- **Swagger Documentation**: Interactive API documentation
+- **Input Validation**: Comprehensive validation using class-validator
+- **Error Handling**: Centralized error handling with custom exceptions
+- **Response Transformation**: Consistent API response format
 
+## 🛠 Tech Stack
+
+- **Framework**: NestJS 11.x
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **ORM**: Prisma 7.x
+- **Authentication**: JWT (JSON Web Tokens)
+- **Validation**: class-validator, class-transformer
+- **Password Hashing**: bcrypt
+- **API Documentation**: Swagger/OpenAPI
+- **Development**: Hot reload with watch mode
+
+## 📦 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **npm** (v9 or higher)
+- **PostgreSQL** (v12 or higher)
+
+## 🚀 Installation
+
+1. **Clone the repository** (or navigate to the project folder):
+   ```bash
+   cd blog-management-api
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+## ⚙️ Environment Configuration
+
+1. **Create a `.env` file** in the root directory:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure the environment variables** in `.env`:
+   ```env
+   PORT=8000
+   DATABASE_URL="postgresql://username:password@localhost:5432/blog_db"
+   JWT_SECRET="your_super_secret_jwt_key_here"
+   ```
+
+   **Important Configuration Details**:
+   - `PORT`: The port on which the server will run (default: 8000)
+   - `DATABASE_URL`: PostgreSQL connection string format:
+     ```
+     postgresql://[user]:[password]@[host]:[port]/[database]
+     ```
+     Example: `postgresql://postgres:mypassword@localhost:5432/blog_db`
+   - `JWT_SECRET`: A strong secret key for JWT token signing (use a complex string)
+
+## 🗄️ Database Setup
+
+1. **Ensure PostgreSQL is running** on your machine
+
+2. **Create the database** (if not already created):
+   ```bash
+   # Connect to PostgreSQL
+   psql -U postgres
+   
+   # Create database
+   CREATE DATABASE blog_db;
+   
+   # Exit
+   \q
+   ```
+
+3. **Run Prisma migrations** to create database tables:
+   ```bash
+   npm run prisma:migrate
+   ```
+   
+   This will create two tables:
+   - `User`: Stores user information (id, name, email, password)
+   - `Post`: Stores blog posts (id, title, content, authorId, createdAt, updatedAt)
+
+4. **Generate Prisma Client**:
+   ```bash
+   npm run prisma:generate
+   ```
+
+5. **(Optional) Open Prisma Studio** to view/manage database:
+   ```bash
+   npm run studio
+   ```
+   This opens a GUI at `http://localhost:5555`
+
+## 🏃 Running the Application
+
+### Development Mode (with hot reload)
 ```bash
-$ npm install
+npm run start:dev
 ```
 
-## Compile and run the project
-
+### Production Mode
 ```bash
-# development
-$ npm run start
+# Build the application
+npm run build
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Run production server
+npm run start:prod
 ```
 
-## Run tests
+The API will be available at: `http://localhost:8000`
+
+## 📚 API Documentation
+
+Once the application is running, you can access:
+
+- **Swagger UI**: `http://localhost:8000/docs`
+  - Interactive API documentation
+  - Test endpoints directly from the browser
+  - View request/response schemas
+
+## 🔌 API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/register` | Register a new user | No |
+| POST | `/api/auth/login` | Login and get JWT token | No |
+
+### Posts
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/posts` | Get all posts (with pagination & search) | No |
+| GET | `/api/posts/:id` | Get a single post by ID | No |
+| POST | `/api/posts` | Create a new post | Yes |
+| PUT | `/api/posts/:id` | Update a post (owner only) | Yes |
+| DELETE | `/api/posts/:id` | Delete a post (owner only) | Yes |
+
+## 📝 Usage Examples
+
+### 1. Register a New User
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+curl -X POST http://localhost:8000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "StrongP@ss123",
+    "confirmPassword": "StrongP@ss123"
+  }'
 ```
 
-## Deployment
+**Password Requirements**:
+- Minimum 6 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+- At least 1 special character
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+**Response**:
+```json
+{
+  "message": "Registration successful",
+  "data": null
+}
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Login
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "StrongP@ss123"
+  }'
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Response**:
+```json
+{
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
 
-## Resources
+### 3. Create a Post (Authenticated)
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+TOKEN="your_jwt_token_here"
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+curl -X POST http://localhost:8000/api/posts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "title": "Getting Started with NestJS",
+    "content": "NestJS is a progressive Node.js framework for building efficient and scalable server-side applications..."
+  }'
+```
 
-## Support
+**Response**:
+```json
+{
+  "message": "Post created successfully",
+  "data": {
+    "id": 1,
+    "title": "Getting Started with NestJS",
+    "content": "NestJS is a progressive Node.js framework...",
+    "authorId": 1,
+    "createdAt": "2025-12-29T10:30:00.000Z",
+    "updatedAt": "2025-12-29T10:30:00.000Z",
+    "author": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 4. Get All Posts (with Pagination & Search)
 
-## Stay in touch
+```bash
+# Get all posts (default: page 1, limit 10)
+curl http://localhost:8000/api/posts
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# With pagination
+curl "http://localhost:8000/api/posts?page=1&limit=5"
 
-## License
+# With search
+curl "http://localhost:8000/api/posts?query=NestJS"
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Combined
+curl "http://localhost:8000/api/posts?query=NestJS&page=1&limit=10"
+```
+
+**Response**:
+```json
+{
+  "data": {
+    "posts": [
+      {
+        "id": 1,
+        "title": "Getting Started with NestJS",
+        "content": "NestJS is a progressive...",
+        "authorId": 1,
+        "createdAt": "2025-12-29T10:30:00.000Z",
+        "updatedAt": "2025-12-29T10:30:00.000Z",
+        "author": {
+          "id": 1,
+          "name": "John Doe",
+          "email": "john@example.com"
+        }
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    }
+  },
+  "message": "Posts retrieved successfully"
+}
+```
+
+### 5. Get Single Post
+
+```bash
+curl http://localhost:8000/api/posts/1
+```
+
+### 6. Update a Post (Authenticated, Owner Only)
+
+```bash
+TOKEN="your_jwt_token_here"
+
+curl -X PUT http://localhost:8000/api/posts/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "title": "Getting Started with NestJS - Updated",
+    "content": "Updated content here..."
+  }'
+```
+
+### 7. Delete a Post (Authenticated, Owner Only)
+
+```bash
+TOKEN="your_jwt_token_here"
+
+curl -X DELETE http://localhost:8000/api/posts/1 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## 📁 Project Structure
+
+```
+blog-management-api/
+├── src/
+│   ├── auth/                    # Authentication module
+│   │   ├── auth.controller.ts   # Auth endpoints (login, register)
+│   │   ├── auth.service.ts      # Auth business logic
+│   │   ├── auth.dto.ts          # Auth DTOs (LoginDto, RegisterDto)
+│   │   └── auth.module.ts       # Auth module configuration
+│   │
+│   ├── post/                    # Blog posts module
+│   │   ├── post.controller.ts   # Post endpoints (CRUD)
+│   │   ├── post.service.ts      # Post business logic
+│   │   ├── post.dto.ts          # Post DTOs (CreatePostDto, UpdatePostDto, etc.)
+│   │   └── post.module.ts       # Post module configuration
+│   │
+│   ├── common/                  # Shared resources
+│   │   ├── services/
+│   │   │   └── prisma.service.ts    # Prisma database service
+│   │   ├── guard/
+│   │   │   └── auth.guard.ts        # JWT authentication guard
+│   │   ├── filters/
+│   │   │   └── http-exception.filter.ts  # Global exception filter
+│   │   ├── interceptors/
+│   │   │   └── transform-response.interceptor.ts  # Response transformer
+│   │   ├── exceptions/
+│   │   │   ├── invalid-credentials.exception.ts
+│   │   │   └── post-ownership.exception.ts
+│   │   ├── utils/
+│   │   │   └── password.util.ts     # Password hashing utilities
+│   │   └── types/
+│   │       ├── types.ts             # Common types
+│   │       └── express.d.ts         # Express type extensions
+│   │
+│   ├── app.module.ts            # Root application module
+│   └── main.ts                  # Application entry point
+│
+├── prisma/
+│   ├── schema.prisma            # Database schema
+│   └── migrations/              # Database migrations
+│
+├── generated/prisma/            # Auto-generated Prisma client
+├── .env                         # Environment variables (create from .env.example)
+├── .env.example                 # Environment template
+├── package.json                 # Dependencies and scripts
+├── tsconfig.json                # TypeScript configuration
+└── README.md                    # This file
+```
+
+## 🔧 Available Scripts
+
+```bash
+# Development
+npm run start:dev              # Start in watch mode (hot reload)
+npm run start                  # Start in normal mode
+npm run start:debug            # Start in debug mode
+
+# Build
+npm run build                  # Build for production
+
+# Production
+npm run start:prod             # Run production build
+
+# Database
+npm run prisma:generate        # Generate Prisma Client
+npm run prisma:migrate         # Run database migrations
+npm run studio                 # Open Prisma Studio (database GUI)
+
+# Code Quality
+npm run lint                   # Lint code
+npm run format                 # Format code with Prettier
+
+# Testing
+npm run test                   # Run unit tests
+npm run test:watch             # Run tests in watch mode
+npm run test:cov               # Run tests with coverage
+npm run test:e2e               # Run end-to-end tests
+```
+
+## 🔒 Security Features
+
+- **Password Hashing**: All passwords are hashed using bcrypt
+- **JWT Authentication**: Secure token-based authentication
+- **Input Validation**: All inputs are validated using class-validator
+- **SQL Injection Protection**: Prisma ORM provides protection
+- **Authorization**: Post ownership verification for update/delete operations
+
+## ❗ Common Issues & Solutions
+
+### 1. Database Connection Error
+```
+Error: P1001: Can't reach database server
+```
+**Solution**: 
+- Ensure PostgreSQL is running
+- Verify DATABASE_URL in `.env` is correct
+- Check PostgreSQL credentials and port
+
+### 2. Prisma Client Not Found
+```
+Error: @prisma/client did not initialize yet
+```
+**Solution**:
+```bash
+npm run prisma:generate
+```
+
+### 3. Migration Failed
+```
+Error: Database 'blog_db' does not exist
+```
+**Solution**:
+```bash
+# Create database manually
+psql -U postgres -c "CREATE DATABASE blog_db;"
+# Then run migrations
+npm run prisma:migrate
+```
+
+### 4. JWT Token Invalid
+```
+401 Unauthorized: Invalid or expired token
+```
+**Solution**:
+- Ensure JWT_SECRET in `.env` matches the one used to sign tokens
+- Get a fresh token by logging in again
+- Check token format: `Bearer <token>`
+
+## 📧 Support
+
+For issues or questions, please open an issue in the repository.
+
+## 📄 License
+
+This project is licensed under the UNLICENSED License.
