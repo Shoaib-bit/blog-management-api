@@ -62,4 +62,19 @@ export class PostService {
             }
         }
     }
+
+    async getPostById(id: number) {
+        return this.prisma.post.findUnique({
+            where: { id },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        })
+    }
 }

@@ -122,9 +122,22 @@ export class PostController {
     }
 
     @Get(':id')
-    getPostById(@Param('id') id: string) {
+    async getPostById(@Param('id') id: number) {
         try {
-            //Todo: Implement logic to get a post by ID
+            if (isNaN(Number(id))) {
+                throw new BadRequestException('Post Id must be number')
+            }
+
+            const post = await this.postService.getPostById(Number(id))
+
+            if (!post) {
+                throw new NotFoundException('Post not found')
+            }
+
+            return {
+                data: post,
+                message: 'Get Post Successfully'
+            }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
