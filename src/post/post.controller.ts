@@ -6,12 +6,12 @@ import {
     Param
 } from '@nestjs/common'
 
-@Controller('blogs')
-export class BlogController {
+@Controller('posts')
+export class PostController {
     @Get()
-    getBlogs() {
+    getPosts() {
         try {
-            //Todo: Implement logic to get blogs
+            //Todo: Implement logic to get posts
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
@@ -23,9 +23,9 @@ export class BlogController {
     }
 
     @Get(':id')
-    getBlogById(@Param('id') id: string) {
+    getPostById(@Param('id') id: string) {
         try {
-            //Todo: Implement logic to get a blog by ID
+            //Todo: Implement logic to get a post by ID
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)
@@ -33,9 +33,6 @@ export class BlogController {
             throw new InternalServerErrorException(
                 'An unexpected error occurred'
             )
-        }   
+        }
     }
-
-
-    
 }
