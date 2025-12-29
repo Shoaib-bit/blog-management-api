@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     ForbiddenException,
     Get,
     InternalServerErrorException,
@@ -225,6 +226,50 @@ export class PostController {
 
             throw new InternalServerErrorException(
                 'An unexpected error occurred while updating the post'
+            )
+        }
+    }
+
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('access-token')
+    @Delete(':id')
+    async deletePost(@Req() req: Request, @Param('id') id: number) {
+        try {
+            if (!req.user || !req.user.id) {
+                throw new UnauthorizedException(
+                    'User not authenticated or invalid user data'
+                )
+            }
+
+            if (isNaN(Number(id))) {
+                throw new BadRequestException('Post Id must be number')
+            }
+
+            const post = await this.postService.getPostById(Number(id))
+            if (!post) {
+                throw new NotFoundException('Post not found')
+            }
+
+            if (post.authorId !== req.user.id) {
+                throw new ForbiddenException(
+                    'You are not authorized to delete this post'
+                )
+            }
+
+            await this.postService.deletePost(Number(id))
+
+            return {
+                message: 'Post deleted successfully'
+            }
+        } catch (error) {
+            if (error.message) {
+                throw new InternalServerErrorException(
+                    `Failed to delete post: ${error.message}`
+                )
+            }
+
+            throw new InternalServerErrorException(
+                'An unexpected error occurred while deleting the post'
             )
         }
     }
