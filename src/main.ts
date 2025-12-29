@@ -5,7 +5,7 @@ import { AppModule } from './app.module'
 
 async function bootstrap() {
     try {
-        const app = await NestFactory.create(AppModule)
+        const app = await NestFactory.create(AppModule, { cors: true })
 
         // Set global API prefix
         app.setGlobalPrefix('api')
