@@ -20,4 +20,46 @@ export class PostService {
             }
         })
     }
+
+    async getPosts(search: string = '', page: number = 1, limit: number = 10) {
+        const where = search
+            ? {
+                  OR: [
+                      { title: { contains: search } },
+                      { content: { contains: search } }
+                  ]
+              }
+            : {}
+
+        const [posts, count] = await Promise.all([
+            this.prisma.post.findMany({
+                where,
+                skip: (page - 1) * limit,
+                take: limit,
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            }),
+            this.prisma.post.count({ where })
+        ])
+
+        return {
+            posts,
+            pagination: {
+                page,
+                limit,
+                total: count,
+                totalPages: Math.ceil(count / limit)
+            }
+        }
+    }
 }

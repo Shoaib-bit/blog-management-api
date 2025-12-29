@@ -7,6 +7,7 @@ import {
     NotFoundException,
     Param,
     Post,
+    Query,
     Req,
     UnauthorizedException,
     UseGuards
@@ -14,7 +15,7 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger'
 import { Request } from 'express'
 import { AuthGuard } from 'src/common/guard'
-import { CreatePostDto } from './post.dto'
+import { CreatePostDto, GetPostsDto } from './post.dto'
 import { PostService } from './post.service'
 
 @Controller('posts')
@@ -22,8 +23,17 @@ export class PostController {
     constructor(private postService: PostService) {}
 
     @Get()
-    getPosts() {
+    async getPosts(@Query() queryParam: GetPostsDto) {
         try {
+            const data = await this.postService.getPosts(
+                queryParam.query,
+                Number(queryParam.page),
+                Number(queryParam.limit)
+            )
+            return {
+                data: data,
+                message: 'Get Posts Successfully'
+            }
         } catch (error) {
             if (error.message) {
                 throw new BadRequestException(error.message)

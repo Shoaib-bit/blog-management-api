@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator'
 
 export class CreatePostDto {
     @ApiProperty({
@@ -25,4 +26,38 @@ export class CreatePostDto {
     @IsString({ message: 'Content must be a string' })
     @MinLength(10, { message: 'Content must be at least 10 characters long' })
     content: string
+}
+
+
+export class GetPostsDto {
+    @ApiProperty({
+        description: 'Search keyword',
+        example: 'john',
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    query?: string
+
+    @ApiProperty({
+        description: 'Page number',
+        example: 1,
+        required: false
+    })
+    @IsOptional()
+    @Type(() => Number)
+    @IsPositive()
+    @IsNumber()
+    page: number = 1
+
+    @ApiProperty({
+        description: 'Items per page',
+        example: 10,
+        required: false
+    })
+    @IsOptional()
+    @Type(() => Number)
+    @IsPositive()
+    @IsNumber()
+    limit: number = 10
 }
