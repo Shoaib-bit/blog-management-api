@@ -6,6 +6,8 @@ import express, { Request, Response } from 'express'
 import { AppModule } from '../src/app.module'
 
 const server = express()
+// Enable trust proxy for Vercel
+server.set('trust proxy', 1)
 
 let cachedApp: any
 
@@ -46,7 +48,18 @@ async function createNestApp() {
             .build()
 
         const document = SwaggerModule.createDocument(app, config)
-        SwaggerModule.setup('api/docs', app, document)
+        SwaggerModule.setup('docs', app, document, {
+            swaggerOptions: {
+                persistAuthorization: true
+            },
+            customSiteTitle: 'Blog Management API Docs',
+            customCssUrl:
+                'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css',
+            customJs: [
+                'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js'
+            ]
+        })
 
         await app.init()
         cachedApp = app

@@ -29,7 +29,12 @@ async function bootstrap() {
             .build()
 
         const documentFactory = () => SwaggerModule.createDocument(app, config)
-        SwaggerModule.setup('docs', app, documentFactory)
+        SwaggerModule.setup('docs', app, documentFactory, {
+            swaggerOptions: {
+                persistAuthorization: true
+            },
+            customSiteTitle: 'Blog Management API Docs'
+        })
 
         await app.listen(process.env.PORT ?? 3000)
     } catch (error) {
