@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Prisma, User } from '@prisma/client'
-import { PrismaService } from 'src/common/services/prisma.service'
-import { JwtPayload } from 'src/common/types/types'
-import { PasswordUtil } from 'src/common/utils'
+import { PrismaService } from '../common/services/prisma.service'
+import { JwtPayload } from '../common/types/types'
+import { PasswordUtil } from '../common/utils'
 import { LoginDto, RegisterDto } from './auth.dto'
 
 @Injectable()

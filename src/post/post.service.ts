@@ -4,8 +4,8 @@ import {
     NotFoundException
 } from '@nestjs/common'
 import { Post } from '@prisma/client'
-import { PostOwnershipException } from 'src/common/exceptions/post-ownership.exception'
-import { PrismaService } from 'src/common/services/prisma.service'
+import { PostOwnershipException } from '../common/exceptions/post-ownership.exception'
+import { PrismaService } from '../common/services/prisma.service'
 import { CreatePostDto, UpdatePostDto } from './post.dto'
 
 export interface PostWithAuthor extends Post {

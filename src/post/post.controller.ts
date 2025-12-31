@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth } from '@nestjs/swagger'
 import { Request } from 'express'
-import { AuthGuard } from 'src/common/guard'
+import { AuthGuard } from '../common/guard'
 import { CreatePostDto, GetPostsDto, UpdatePostDto } from './post.dto'
 import { PostService } from './post.service'
 
