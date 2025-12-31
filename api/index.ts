@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import { AppModule } from '../src/app.module'
 
 const server = express()
@@ -13,7 +13,8 @@ async function createNestApp() {
     if (!cachedApp) {
         const expressAdapter = new ExpressAdapter(server)
         const app = await NestFactory.create(AppModule, expressAdapter, {
-            cors: true
+            cors: true,
+            logger: ['error', 'warn', 'log']
         })
 
         // Set global API prefix
@@ -44,8 +45,8 @@ async function createNestApp() {
             )
             .build()
 
-        const documentFactory = () => SwaggerModule.createDocument(app, config)
-        SwaggerModule.setup('docs', app, documentFactory)
+        const document = SwaggerModule.createDocument(app, config)
+        SwaggerModule.setup('api/docs', app, document)
 
         await app.init()
         cachedApp = app
@@ -54,7 +55,7 @@ async function createNestApp() {
 }
 
 // Serverless function handler for Vercel
-export default async (req: any, res: any) => {
+export default async (req: Request, res: Response) => {
     await createNestApp()
     return server(req, res)
 }
