@@ -3,7 +3,7 @@ import {
     Injectable,
     NotFoundException
 } from '@nestjs/common'
-import { Post } from 'generated/prisma/client'
+import { Post } from '@prisma/client'
 import { PostOwnershipException } from 'src/common/exceptions/post-ownership.exception'
 import { PrismaService } from 'src/common/services/prisma.service'
 import { CreatePostDto, UpdatePostDto } from './post.dto'
