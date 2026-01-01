@@ -29,11 +29,30 @@ async function createNestApp() {
             })
         )
 
+        // Enable CORS with proper configuration
+        app.enableCors({
+            origin: true,
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+        })
+
+        // Get the base URL for Swagger (use HTTPS on Vercel)
+        const isProduction =
+            process.env.VERCEL_URL || process.env.NODE_ENV === 'production'
+        const baseUrl = process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : 'http://localhost:3000'
+
         // Swagger configuration
         const config = new DocumentBuilder()
             .setTitle('Blog Management API')
             .setDescription('API for Blog Management')
             .setVersion('1.0')
+            .addServer(
+                baseUrl,
+                isProduction ? 'Production Server' : 'Development Server'
+            )
             .addBearerAuth(
                 {
                     type: 'http',
@@ -50,7 +69,8 @@ async function createNestApp() {
         const document = SwaggerModule.createDocument(app, config)
         SwaggerModule.setup('docs', app, document, {
             swaggerOptions: {
-                persistAuthorization: true
+                persistAuthorization: true,
+                tryItOutEnabled: true
             },
             customSiteTitle: 'Blog Management API Docs',
             customCssUrl:
