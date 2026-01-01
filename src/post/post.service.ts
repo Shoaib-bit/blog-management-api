@@ -86,8 +86,18 @@ export class PostService {
         const where = search
             ? {
                   OR: [
-                      { title: { contains: search } },
-                      { content: { contains: search } }
+                      {
+                          title: {
+                              contains: search,
+                              mode: 'insensitive' as const
+                          }
+                      },
+                      {
+                          content: {
+                              contains: search,
+                              mode: 'insensitive' as const
+                          }
+                      }
                   ]
               }
             : {}
